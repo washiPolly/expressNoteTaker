@@ -15,6 +15,29 @@ const dbRouter = (app, fs) => {
 
     const dbPath = './db/db.json';
 
+     // refactored helper methods
+     const readFile = (callback, returnJson = false, filePath = dbPath, encoding = 'utf8') => {
+        fs.readFile(filePath, encoding, (err, data) => {
+            if (err) {
+                throw err;
+            }
+
+            callback(returnJson ? JSON.parse(data) : data);
+        });
+    };
+
+   const writeFile = (fileData, callback, filePath = dbPath, encoding = 'utf8') => {
+
+        fs.writeFile(filePath, fileData, encoding, (err) => {
+            if (err) {
+                throw err;
+            }
+
+            callback();
+        });
+    };
+
+    // READ
     app.get('/api/notes', (req, res) => {
         fs.readFile(dbPath, 'utf8', (err, data)=> {
             if(err){
@@ -25,7 +48,7 @@ const dbRouter = (app, fs) => {
         
     });
 
-    app.post('/notes', (req, res) => {
+    app.post('api/notes', (req, res) => {
         readFile(data => {
             const newNoteID = Object.keys(data).length + 1;
 
@@ -38,6 +61,38 @@ const dbRouter = (app, fs) => {
         },
         true);
     });
+
+   // UPDATE
+    app.put('api/notes/:id', (req, res) => {
+
+    readFile(data => {
+
+        // add the new note
+        const noteID = req.params["id"];
+        data[noteID] = JSON.parse(req.body.data);
+
+        writeFile(JSON.stringify(data, null, 2), () => {
+            res.status(200).send(`note id:${noteID} updated`);
+        });
+    },
+        true);
+});
+
+// DELETE
+app.delete('api/notes/:id', (req, res) => {
+
+    readFile(data => {
+
+        // add the new user
+        const noteID = req.params["id"];
+        delete data[noteID];
+
+        writeFile(JSON.stringify(data, null, 2), () => {
+            res.status(200).send(`note id:${noteID} removed`);
+        });
+    },
+        true);
+});
     
 };
 

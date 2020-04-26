@@ -7,23 +7,31 @@ const writeData = util.promisify(fs.writeFile);
 
 class Db {
     read() {
-        return readData ("db.json","utf8");
+        return readData("db/db.json", "utf8");
     }
     write(note){
-        return writeData("db.json", JSON.stringify(note));
+        return writeData("db/db.json", JSON.stringify(note));
     }
-    getNotes(){
-    fs.readFile("dbjson", "utf8", (err, data)=> {
-        if(err){
-            throw err;
+    getNote(){
+        
+        return this.read()
+        .then (notes => {
+        //     let parsedNote = JSON.parse(notes); //passing notes and converting it to object
+        //     return parsedNote;
+        try {
+            let parsedNote;
+            parsedNote = [].concat(JSON.parse(notes));
+        } catch (err) {
+            parsedNote = [];
         }
-        res.send(JSON.parse(data));
-    });
-}
-    addNotes(note){
+        return parsedNote;
+        });
+    }
+
+    addNote(note){
         const {title, text} = note; //means db.json has title and text in its object
         const newNote = {title, text, id: uuidv1()};
-        return this.getNotes()
+        return this.getNote()
         .then (notes => [...notes, newNote]) //uses spread operator to read all the notes and appends the "new note" at the end of array
         .then (writeNote => this.write(writeNote)
         .then (() => newNote)
@@ -31,4 +39,6 @@ class Db {
     }
 }
 
-module.exports = new Db;
+module.exports = new Db();
+
+

@@ -1,42 +1,19 @@
-// Dependencies
-var fs = require('fs');
-var path = require("path");
-var bodyParser = require('body-parser');
-var express = require("express");
-var apiRoutes = require('./routing/api-routes');
-var htmlRoutes = require('./routing/html-routes');
+const express = require("express");
+const apiRoutes = require('./routing/api-routes');
+const htmlRoutes = require('./routing/html-routes');
 
+//initialize the app and create port
+const app = express();
+const PORT = process.env.PORT || 8081;
 
-var app = express();
+//Set up body parsing, static, and route middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static("public"))
 app.use("/api", apiRoutes);
 app.use("/", htmlRoutes);
 
-// require('./routing/api-routes')(app);
-// require('./routing/html-routes')(app);
-
-
-var PORT = process.env.PORT || 8081;
-
-
-
-//parse applicaiton/x-www0form-urlencoded
-app.use(express.urlencoded({ extended: true }))
-app.use(express.static('public'))
-
-//parse applicaiton/json
-app.use(bodyParser.json())
-
-
-
-
-// app.get('/', (req, res)=> {
-//     res.send('welcome to the development api-server');
-//     dbRouter(app,fs);
-// });
-
-
-
-
+//start port on server
 app.listen(PORT, function(){
     console.log("App listening on PORT: " + PORT);
 })

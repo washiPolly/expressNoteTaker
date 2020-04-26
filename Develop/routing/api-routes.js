@@ -13,89 +13,84 @@
 const Db = require('../db/db.js');
 const fs = require('fs');
 const uuidv1 = require('uuidv1');
-const dbPath = './db/db.json';
 
+const router = require('express').Router();
 
-module.exports = function (app) {
-
-
-
-     // refactored helper methods
-
-
-//      const readFile = (callback, returnJson = false, filePath = dbPath, encoding = 'utf8') => {
-//         fs.readFile(filePath, encoding, (err, data) => {
-//             if (err) {
-//                 throw err;
-//             }
-
-//             callback(returnJson ? JSON.parse(data) : data);
-//         });
-//     };
-
-//    const writeFile = (fileData, callback, filePath = dbPath, encoding = 'utf8') => {
-
-//         fs.writeFile(filePath, fileData, encoding, (err) => {
-//             if (err) {
-//                 throw err;
-//             }
-
-//             callback();
-//         });
-//     };
-
-    // READ
-    app.get('api/notes', (req, res) => {
-        fs.readFile(dbPath, 'utf8', (err, data)=> {
-            if(err){
-                throw err;
-            }
-            res.send(JSON.parse(data));
-        });
-        
-    });
-
-    app.post('api/notes', (req, res) => {
-        Db.addNotes(req.body).then ((note) => res.send (note))
-        .catch(err => res.status(500).json(err));
-            
-             
-        
-
-    });
-
-   // UPDATE
-    app.put('api/notes/:id', (req, res) => {
-
-    readFile(data => {
-
-        // add the new note
-        const noteID = req.params["id"];
-        data[noteID] = JSON.parse(req.body.data);
-
-        writeFile(JSON.stringify(data, null, 2), () => {
-            res.status(200).send(`note id:${noteID} updated`);
-        });
-    },
-        true);
+//GET "/api/notes" responds with all notes from the database
+router.get("/notes", function (req, res) {
+    Db.getNote()
+        .then((note) => res.json(note))  //JSON.parse reads file and conerts JSON to array of objects. then "res.send" sends info to broswer
+        .catch((err) => res.status(500).json(err));
 });
 
-// DELETE
-app.delete('api/notes/:id', (req, res) => {
-
-    readFile(data => {
-
-        // add the new user
-        const noteID = req.params["id"];
-        delete data[noteID];
-
-        writeFile(JSON.stringify(data), () => {
-            res.status(200).send(`note id:${noteID} removed`);
-        });
-    },
-        true);
+router.post("/notes", (req, res) => {
+    Db.addNote(req.body)
+        .then((note) => res.json(note))
+        .catch((err) => res.status(500).json(err));
 });
-    
 
-}
-    
+// // DELETE "/api/notes" deletes the note with an id equal to req.params.id
+// router.delete("/notes/:id", function (req, res) {
+//     Db.removeNote(req.params.id)
+//         .then(() => res.json({
+//             ok: true
+//         }))
+//         .catch((err) => res.status(500).json(err));
+// });
+
+module.exports = router;
+
+
+
+
+//     // READ
+//     router.get('/notes', (req, res) => {
+//         fs.readFile(dbPath, 'utf8', (err, data)=> {
+//             if(err){
+//                 throw err;
+//             }
+//             res.send(JSON.parse(data));
+//         });
+
+//     });
+
+//     app.post('api/notes', (req, res) => {
+//         Db.addNotes(req.body).then ((note) => res.send (note))
+//         .catch(err => res.status(500).json(err));
+
+
+
+
+//     });
+
+//    // UPDATE
+//     app.put('api/notes/:id', (req, res) => {
+
+//     readFile(data => {
+
+//         // add the new note
+//         const noteID = req.params["id"];
+//         data[noteID] = JSON.parse(req.body.data);
+
+//         writeFile(JSON.stringify(data, null, 2), () => {
+//             res.status(200).send(`note id:${noteID} updated`);
+//         });
+//     },
+//         true);
+// });
+
+// // DELETE
+// app.delete('api/notes/:id', (req, res) => {
+
+//     readFile(data => {
+
+//         // add the new user
+//         const noteID = req.params["id"];
+//         delete data[noteID];
+
+//         writeFile(JSON.stringify(data), () => {
+//             res.status(200).send(`note id:${noteID} removed`);
+//         });
+//     },
+//         true);
+// });

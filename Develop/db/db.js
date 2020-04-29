@@ -18,8 +18,8 @@ class Db {
         .then (notes => {
         //     let parsedNote = JSON.parse(notes); //passing notes and converting it to object
         //     return parsedNote;
+        let parsedNote;
         try {
-            let parsedNote;
             parsedNote = [].concat(JSON.parse(notes));
         } catch (err) {
             parsedNote = [];
@@ -27,7 +27,7 @@ class Db {
         return parsedNote;
         });
     }
-
+   
     addNote(note){
         const {title, text} = note; //means db.json has title and text in its object
         const newNote = {title, text, id: uuidv1()};
@@ -37,7 +37,41 @@ class Db {
         .then (() => newNote)
         )
     }
+
+    removeNote(id){
+
+        return this.getNote()
+        // .then (allNotes => {
+        //     allNotes.filter(note => {note.id !== id}) //filter through notes and remove one with given id
+        //     .then (filterNotes => this.write(filterNotes))
+               
+        // });
+
+
+        .then (function (allNotes) {
+            console.log(allNotes)
+            return allNotes.filter(function (note) {
+                console.log(note.id !== id) 
+                return note.id !== id
+                });
+            })
+
+            
+        // .then (function (filterNotes){
+        //     this.write(filterNotes)
+        //     console.log(filterNotes) 
+            
+        // });
+        .then(filterNotes => this.write(filterNotes));
+        
+        
+  
+        
+    }
+    
 }
+
+
 
 module.exports = new Db();
 

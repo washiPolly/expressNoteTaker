@@ -10,7 +10,7 @@
 // note a unique id when it's saved. In order to delete a note,
 //  you'll need to read all notes from the db.json file, remove the note with the given 
 // id property, and then rewrite the notes to the db.json file.
-const Db = require('../db/db.js');
+const Db = require('../db/db');
 const fs = require('fs');
 const uuidv1 = require('uuidv1');
 
@@ -29,68 +29,18 @@ router.post("/notes", (req, res) => {
         .catch((err) => res.status(500).json(err));
 });
 
-// // DELETE "/api/notes" deletes the note with an id equal to req.params.id
-// router.delete("/notes/:id", function (req, res) {
-//     Db.removeNote(req.params.id)
-//         .then(() => res.json({
-//             ok: true
-//         }))
-//         .catch((err) => res.status(500).json(err));
-// });
+// DELETE "/api/notes" deletes the note with an id equal to req.params.id
+router.delete("/notes/:id", function (req, res) {
+   console.log("delete route trigger")
+    console.log(req.params.id)
+    Db.removeNote(req.params.id) //params means it will read the id from the url
+        .then(() => res.send(200))          //the broswer has removed note or ok: true
+        .catch((err) => 
+        console.log(err));
+       // res.status(500).json(err));
+        
+});
 
 module.exports = router;
 
 
-
-
-//     // READ
-//     router.get('/notes', (req, res) => {
-//         fs.readFile(dbPath, 'utf8', (err, data)=> {
-//             if(err){
-//                 throw err;
-//             }
-//             res.send(JSON.parse(data));
-//         });
-
-//     });
-
-//     app.post('api/notes', (req, res) => {
-//         Db.addNotes(req.body).then ((note) => res.send (note))
-//         .catch(err => res.status(500).json(err));
-
-
-
-
-//     });
-
-//    // UPDATE
-//     app.put('api/notes/:id', (req, res) => {
-
-//     readFile(data => {
-
-//         // add the new note
-//         const noteID = req.params["id"];
-//         data[noteID] = JSON.parse(req.body.data);
-
-//         writeFile(JSON.stringify(data, null, 2), () => {
-//             res.status(200).send(`note id:${noteID} updated`);
-//         });
-//     },
-//         true);
-// });
-
-// // DELETE
-// app.delete('api/notes/:id', (req, res) => {
-
-//     readFile(data => {
-
-//         // add the new user
-//         const noteID = req.params["id"];
-//         delete data[noteID];
-
-//         writeFile(JSON.stringify(data), () => {
-//             res.status(200).send(`note id:${noteID} removed`);
-//         });
-//     },
-//         true);
-// });
